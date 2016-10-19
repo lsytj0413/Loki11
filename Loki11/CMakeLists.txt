@@ -3,7 +3,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 SET (CMAKE_CXX_FLAGS "-std=c++14")
 
 SET (LOKI11_SRC
-  util.hpp
+  static_check.hpp
   )
 
 SET(CMAKE_CXX_FLAGS_DEBUG "-O0 -Wall -g -ggdb ")
