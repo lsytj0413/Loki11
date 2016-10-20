@@ -85,6 +85,12 @@ struct Append<Typelist<TArgs...>, T>
     using Result = Typelist<TArgs..., T>;
 };
 
+template <typename... T, typename... TArgs>
+struct Append<Typelist<TArgs...>, Typelist<T...>>
+{
+    using Result = Typelist<TArgs..., T...>;
+};
+
 
 template <typename... T>
 struct EraseImp;
@@ -214,5 +220,21 @@ template <typename... TArgs, typename T, typename U>
 struct ReplaceAll<Typelist<TArgs...>, T, U>
         : public ReplaceAllImp<Typelist<TArgs...>, T, U, Typelist<>>
 {};
+
+
+template <typename... T>
+struct Reverse;
+
+template <>
+struct Reverse<Typelist<>>
+{
+    using Result = Typelist<>;
+};
+
+template <typename Head, typename... TArgs>
+struct Reverse<Typelist<Head, TArgs...>>
+{
+    using Result = typename Append<Typelist<TArgs...>, Head>::Result;
+};
 
 }
