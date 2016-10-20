@@ -6,6 +6,8 @@ SET (LOKI11_SRC
   static_check.hpp
   LokiTypeInfo.hpp
   TypeManip.hpp
+  EmptyType.hpp
+  NullType.hpp
   )
 
 SET(CMAKE_CXX_FLAGS_DEBUG "-O0 -Wall -g -ggdb ")
