@@ -237,4 +237,52 @@ struct Reverse<Typelist<Head, TArgs...>>
     using Result = typename Append<Typelist<TArgs...>, Head>::Result;
 };
 
+
+template <typename... T>
+struct MostDerived;
+
+template <typename T>
+struct MostDerived<Typelist<>, T>
+{
+    using Result = T;
+};
+
+template <typename Head, typename... TArgs, typename T>
+struct MostDerived<Typelist<Head, TArgs...>, T>
+        : public std::conditional<std::is_base_of<T, Head>::value,
+                                  MostDerived<Typelist<TArgs...>, Head>,
+                                  MostDerived<Typelist<TArgs...>, T>
+                                  >::type
+{};
+
+
+template <typename... T>
+struct DerivedToFront;
+
+template <>
+struct DerivedToFront<Typelist<>>
+{
+    using Result = Typelist<>;
+};
+
+template <typename T>
+struct DerivedToFront<Typelist<T>>
+{
+    using Result = Typelist<T>;
+};
+
+template <typename Head, typename... TArgs>
+struct DerivedToFront<Typelist<Head, TArgs...>>
+{
+private:
+    using TheMostDerived = typename MostDerived<Typelist<TArgs...>, Head>::Result;
+
+public:
+    using Result = typename Append<Typelist<TheMostDerived>,
+                                   typename DerivedToFront<typename Replace<Typelist<TArgs...>,
+                                                                            TheMostDerived, Head>::Result
+                                                           >::Result>::Result;
+};
+
+
 }
