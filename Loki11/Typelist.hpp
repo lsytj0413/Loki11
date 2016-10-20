@@ -138,5 +138,26 @@ struct EraseAll<Typelist<TArgs...>, T>
 {};
 
 
+template <typename... T>
+struct NoDuplicatesImp;
+
+template <typename... UArgs>
+struct NoDuplicatesImp<Typelist<>, Typelist<UArgs...>>
+{
+    using Result = Typelist<UArgs...>;
+};
+
+template <typename Head, typename... TArgs, typename... UArgs>
+struct NoDuplicatesImp<Typelist<Head, TArgs...>, Typelist<UArgs...>>
+        : public std::conditional<(-1 == IndexOf<Typelist<UArgs...>, Head>::value),
+        NoDuplicatesImp<Typelist<TArgs...>, Typelist<UArgs..., Head>>,
+        NoDuplicatesImp<Typelist<TArgs...>, Typelist<UArgs...>>
+                                  >::type
+{};
+
+template <typename... TArgs>
+struct NoDuplicates : public NoDuplicatesImp<Typelist<TArgs...>, Typelist<>>
+{};
+
 
 }
