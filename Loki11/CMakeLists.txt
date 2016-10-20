@@ -9,6 +9,7 @@ SET (LOKI11_SRC
   EmptyType.hpp
   NullType.hpp
   TypeTraits.hpp
+  Typelist.hpp
   )
 
 SET(CMAKE_CXX_FLAGS_DEBUG "-O0 -Wall -g -ggdb ")
