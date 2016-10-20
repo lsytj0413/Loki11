@@ -160,4 +160,59 @@ struct NoDuplicates : public NoDuplicatesImp<Typelist<TArgs...>, Typelist<>>
 {};
 
 
+template <typename... T>
+struct ReplaceImp;
+
+template <typename T, typename U, typename... UArgs>
+struct ReplaceImp<Typelist<>, T, U, Typelist<UArgs...>>
+{
+    using Result = Typelist<UArgs...>;
+};
+
+template <typename... TArgs, typename T, typename U, typename... UArgs>
+struct ReplaceImp<Typelist<T, TArgs...>, T, U, Typelist<UArgs...>>
+{
+    using Result = Typelist<UArgs..., U, TArgs...>;
+};
+
+template <typename Head, typename... TArgs, typename T, typename U, typename... UArgs>
+struct ReplaceImp<Typelist<Head, TArgs...>, T, U, Typelist<UArgs...>>
+        : public ReplaceImp<Typelist<TArgs...>, T, U, Typelist<UArgs..., Head>>
+{};
+
+template <typename... T>
+struct Replace;
+
+template <typename... TArgs, typename T, typename U>
+struct Replace<Typelist<TArgs...>, T, U>
+        : public ReplaceImp<Typelist<TArgs...>, T, U, Typelist<>>
+{};
+
+template <typename... T>
+struct ReplaceAllImp;
+
+template <typename T, typename U, typename... UArgs>
+struct ReplaceAllImp<Typelist<>, T, U, Typelist<UArgs...>>
+{
+    using Result = Typelist<UArgs...>;
+};
+
+template <typename... TArgs, typename T, typename U, typename... UArgs>
+struct ReplaceAllImp<Typelist<T, TArgs...>, T, U, Typelist<UArgs...>>
+        : public ReplaceAllImp<Typelist<TArgs...>, T, U, Typelist<UArgs..., U>>
+{};
+
+template <typename Head, typename... TArgs, typename T, typename U, typename... UArgs>
+struct ReplaceAllImp<Typelist<Head, TArgs...>, T, U, Typelist<UArgs...>>
+        : public ReplaceAllImp<Typelist<TArgs...>, T, U, Typelist<UArgs..., Head>>
+{};
+
+template <typename... T>
+struct ReplaceAll;
+
+template <typename... TArgs, typename T, typename U>
+struct ReplaceAll<Typelist<TArgs...>, T, U>
+        : public ReplaceAllImp<Typelist<TArgs...>, T, U, Typelist<>>
+{};
+
 }
