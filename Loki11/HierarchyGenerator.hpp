@@ -3,7 +3,6 @@
 #include "Typelist.hpp"
 #include "TypeManip.hpp"
 
-
 namespace Loki11
 {
 
@@ -60,6 +59,38 @@ Field(GenScatterHierarchy<Typelist<TArgs...>, Unit>& obj)
     return FieldHelper(obj, Int2Type<i>());
 };
 
+template <class T>
+struct TupleUnit
+{
+    T value_;
+    operator T&() {
+        return value_;
+    };
+    operator const T&() const {
+        return value_;
+    };
+};
+
+
+template <typename TL>
+struct Tuple : public GenScatterHierarchy<TL, TupleUnit>
+{};
+
+template <typename... TArgs>
+struct Tuple<Typelist<TArgs...>> : public GenScatterHierarchy<Typelist<TArgs...>, TupleUnit>
+{};
+
+template <typename T, template <class, class> class Unit>
+class GenLinearHierarchy;
+
+template <template <class, class> class Unit>
+class GenLinearHierarchy<Typelist<>, Unit>
+{};
+
+template <typename Head, typename... TArgs, template <class, class> class Unit>
+class GenLinearHierarchy<Typelist<Head, TArgs...>, Unit>
+        : public Unit<Head, GenLinearHierarchy<Typelist<TArgs...>, Unit>>
+{};
 
 
 }
