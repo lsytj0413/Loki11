@@ -25,7 +25,7 @@ struct IsCustomFloat
     static const bool value = 0;
 };
 
-
+// C++11: 使用 <type_traits>中的函数
 template <typename T>
 class TypeTraits
 {

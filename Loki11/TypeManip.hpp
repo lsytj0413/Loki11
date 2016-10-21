@@ -5,6 +5,7 @@
 namespace Loki11
 {
 
+// C++11: 使用std::integral_constant
 template <int v>
 struct Int2Type : public std::integral_constant<int, v>
 {};

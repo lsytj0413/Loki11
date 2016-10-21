@@ -8,10 +8,28 @@ Loki11是一个只由头文件组成的C++模板库, 是《Modern C++ Design》�
 
 ## 什么是Loki/Loki11
 
-Loki是一个C++编写的模板程序库. 包括Small-Object Allocation, Generalization Funtors, Singleton, Smart Pointers, Object Factories, Abstract Factory, Visitor, Multimethods 等泛型组件. 以templates-based, policies-based等手法, 将一些设计模式具体实现.
+**Loki** 是一个C++编写的模板程序库. 包括Small-Object Allocation, Generalization Funtors, Singleton, Smart Pointers, Object Factories, Abstract Factory, Visitor, Multimethods 等泛型组件. 
+以templates-based, policies-based等手法, 将一些设计模式具体实现.
 
+## 进度
+### 第二章
 
+| 内容             | 文件             | 描述                   |
+| :--              | :--              | :--                    |
+| 编译期Assertions | static_check.hpp | 编译期错误检测         |
+| 长整数映射为类型 | TypeManip.hpp    | Int2Type               |
+| 类型映射为类型   | TypeManip.hpp    | Type2Type              |
+| 编译期类型选择   | TypeManip.hpp    | 编译期IF语句           |
+| 类型可转换性     | TypeManip.hpp    | 类型间的可转换关系     |
+| 类型继承性       | TypeManip.hpp    | 类型间的继承关系       |
+| type_info外覆类  | LokiTypeInfo.hpp | 对std::type_info的包装 |
+| NullType         | NullType.hpp     | 空类型                 |
+| EmptyType        | EmptyType.hpp    | 空类型                 |
+| Type Traits      | TypeTraits.hpp   | 类型信息萃取                 |
 
+### 第三章 ###
 
-
+| 内容     | 文件         | 描述                         |
+| :--      | :--          | :--                          |
+| 类型列表 | Typelist.hpp | 对一系列类型组成的列表的操作 |
 

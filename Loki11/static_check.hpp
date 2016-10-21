@@ -13,6 +13,7 @@ struct CompileTimeChecker
 template <>
 struct CompileTimeChecker<false> {};
 
+// C++11: 使用 static_assert
 #define STATIC_CHECK(expr, msg)                     \
     { \
         class ERROR_##MSG {}; \
