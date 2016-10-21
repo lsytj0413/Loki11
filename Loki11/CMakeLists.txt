@@ -10,6 +10,7 @@ SET (LOKI11_SRC
   NullType.hpp
   TypeTraits.hpp
   Typelist.hpp
+  HierarchyGenerator.hpp
   )
 
 SET(CMAKE_CXX_FLAGS_DEBUG "-O0 -Wall -g -ggdb ")
