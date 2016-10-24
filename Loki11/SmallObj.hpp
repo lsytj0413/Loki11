@@ -11,7 +11,7 @@
 #endif
 
 #ifndef MAX_SMALL_OBJECT_SIZE
-#define MAX_SAMLL_OBJECT_SIZE 64
+#define MAX_SMALL_OBJECT_SIZE 64
 #endif
 
 
@@ -332,5 +332,52 @@ public:
         m_last_dealloc->Deallocate(p);
     };
 };
+
+template <
+    template <class> class ThreadingModel = DEFAULT_THREADING,
+    std::size_t chunkSize = DEFAULT_CHUNK_SIZE,
+    std::size_t maxSmallObjectSize = MAX_SMALL_OBJECT_SIZE
+    >
+class SmallObject : public ThreadingModel<
+    SmallObject<ThreadingModel, chunkSize, maxSmallObjectSize>>
+{
+    using MyThreadingModel = ThreadingModel<SmallObject<ThreadingModel, chunkSize, maxSmallObjectSize>>;
+
+    struct MySmallObjAllocator : public SmallObjAllocator
+    {
+        MySmallObjAllocator()
+                : SmallObjAllocator(chunkSize, maxSmallObjectSize)
+        {};
+    };
+
+public:
+    static void* operator new(std::size_t size)
+    {
+#if (MAX_SMALL_OBJECT_SIZE != 0) && (DEFAULT_CHUNK_SIZE != 0)
+        using Lock = MyThreadingModel::Lock;
+        Lock lock;
+        (void)lock;
+
+        return SingletonHolder<MySmallObjAllocator, CreateStatic, PhoenixSingleton>::Instance().Allocate(size);
+#else
+        return ::operator new(size);
+#endif
+    }
+
+    static void operator delete(void* p, std::size_t size)
+    {
+#if (MAX_SMALL_OBJECT_SIZE != 0) && (DEFAULT_CHUNK_SIZE != 0)
+        typename MyThreadingModel::Lock lock;
+        (void)lock;
+
+        SingletonHolder<MySmallObjAllocator, CreateStatic,
+                        PhoenixSingleton>::Instance().Deallocate(p, size);
+#else
+        ::operator delete(p);
+#endif
+    }
+    virtual ~SmallObject() {}
+};
+
 
 }
