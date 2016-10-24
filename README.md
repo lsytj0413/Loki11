@@ -34,3 +34,9 @@ Loki11是一个只由头文件组成的C++模板库, 是《Modern C++ Design》�
 | 类型列表      | Typelist.hpp           | 对一系列类型组成的列表的操作   |
 | 自动产生class | HierarchyGenerator.hpp | 自动产生散乱的或线性的继承体系 |
 
+### 第四章 ###
+
+| 内容 | 文件 | 描述 |
+| :--  | :--  | :--  |
+| 小型对象分配技术 | SmallObj.hpp | 一个高效的小型对象分配器 |
+
