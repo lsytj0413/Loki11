@@ -167,25 +167,142 @@ TEST_F(TypelistTest, testNoDuplicates)
 
 TEST_F(TypelistTest, testReplace)
 {
+    using T1 = Typelist<>;
+    using T2 = typename Replace<T1, int, char>::Result;
+    auto v = std::is_same<T2, Typelist<>>::value;
+    EXPECT_EQ(v, true);
 
+    using T3 = Typelist<int, char, int, float>;
+    using T4 = typename Replace<T3, int, short>::Result;
+    v = std::is_same<T4, Typelist<short, char, int, float>>::value;
+    EXPECT_EQ(v, true);
+
+    using T6 = typename Replace<T3, float, short>::Result;
+    v = std::is_same<T6, Typelist<int, char, int, short>>::value;
+    EXPECT_EQ(v, true);
+
+    using T8 = typename Replace<T3, void, short>::Result;
+    v = std::is_same<T8, Typelist<int, char, int, float>>::value;
+    EXPECT_EQ(v, true);
 }
 
 TEST_F(TypelistTest, testReplaceAll)
 {
+    using T1 = Typelist<>;
+    using T2 = typename ReplaceAll<T1, int, char>::Result;
+    auto v = std::is_same<T2, Typelist<>>::value;
+    EXPECT_EQ(v, true);
 
+    using T3 = Typelist<int, char, int, float>;
+    using T4 = typename ReplaceAll<T3, int, short>::Result;
+    v = std::is_same<T4, Typelist<short, char, short, float>>::value;
+    EXPECT_EQ(v, true);
+
+    using T6 = typename ReplaceAll<T3, float, short>::Result;
+    v = std::is_same<T6, Typelist<int, char, int, short>>::value;
+    EXPECT_EQ(v, true);
+
+    using T8 = typename ReplaceAll<T3, void, short>::Result;
+    v = std::is_same<T8, Typelist<int, char, int, float>>::value;
+    EXPECT_EQ(v, true);
 }
 
 TEST_F(TypelistTest, testReverse)
 {
+    using T1 = typename Reverse<Typelist<>>::Result;
+    auto v = std::is_same<T1, Typelist<>>::value;
+    EXPECT_EQ(v, true);
 
+    using T2 = typename Reverse<Typelist<int, double, char>>::Result;
+    v = std::is_same<T2, Typelist<char, double, int>>::value;
+    EXPECT_EQ(v, true);
+
+    using T3 = typename Reverse<Typelist<int, double, int, char>>::Result;
+    v = std::is_same<T3, Typelist<char, int, double, int>>::value;
+    EXPECT_EQ(v, true);
+
+    using T4 = typename Reverse<Typelist<int>>::Result;
+    v = std::is_same<T4, Typelist<int>>::value;
+    EXPECT_EQ(v, true);
 }
+
+class A{};
+class B : public A{};
+class C : public B{};
+class D : public A{};
 
 TEST_F(TypelistTest, testMostDerived)
 {
+    using T1 = Typelist<int, char>;
+    auto v = std::is_same<typename MostDerived<T1, float>::Result, float>::value;
+    EXPECT_EQ(v, true);
 
+    using T2 = Typelist<A, B>;
+    v = std::is_same<typename MostDerived<T2, C>::Result, C>::value;
+    EXPECT_EQ(v, true);
+
+    using T3 = Typelist<A, B, C>;
+    v = std::is_same<typename MostDerived<T3, D>::Result, D>::value;
+    EXPECT_EQ(v, true);
+
+    using T4 = Typelist<A, C, B, D>;
+    v = std::is_same<typename MostDerived<T4, int>::Result, int>::value;
+    EXPECT_EQ(v, true);
+
+    using T5 = Typelist<A, C, B, D>;
+    v = std::is_same<typename MostDerived<T5, A>::Result, C>::value;
+    EXPECT_EQ(v, true);
+
+    using T6 = Typelist<A, D, C, B>;
+    v = std::is_same<typename MostDerived<T6, A>::Result, D>::value;
+    EXPECT_EQ(v, true);
+
+    using T7 = Typelist<A, D>;
+    v = std::is_same<typename MostDerived<T7, B>::Result, B>::value;
+    EXPECT_EQ(v, true);
 }
 
 TEST_F(TypelistTest, testDerivedToFront)
 {
+    using T1 = Typelist<>;
+    auto v = std::is_same<typename DerivedToFront<T1>::Result,
+                          Typelist<>
+                          >::value;
+    EXPECT_EQ(v, true);
 
+    using T2 = Typelist<A>;
+    v = std::is_same<typename DerivedToFront<T2>::Result,
+                     Typelist<A>
+                     >::value;
+    EXPECT_EQ(v, true);
+
+    using T3 = Typelist<int, char, A>;
+    v = std::is_same<typename DerivedToFront<T3>::Result,
+                     Typelist<int, char, A>
+                     >::value;
+    EXPECT_EQ(v, true);
+
+    using T4 = Typelist<int, char, A, D>;
+    v = std::is_same<typename DerivedToFront<T4>::Result,
+                     Typelist<int, char, D, A>
+                     >::value;
+    EXPECT_EQ(v, true);
+
+    using T5 = Typelist<A, D, B, C>;
+    v = std::is_same<typename DerivedToFront<T5>::Result,
+                     Typelist<D, C, B, A>
+                     >::value;
+    EXPECT_EQ(v, true);
+
+    using T6 = Typelist<A, B, D, C>;
+    v = std::is_same<typename DerivedToFront<T6>::Result,
+                     Typelist<C, B, D, A>
+                     >::value;
+    EXPECT_EQ(v, true);
+
+    using T7 = Typelist<A, D, C>;
+    v = std::is_same<typename DerivedToFront<T7>::Result,
+                     Typelist<D, C, A>
+                     >::value;
+    EXPECT_EQ(v, true);
 }

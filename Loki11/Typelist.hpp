@@ -240,7 +240,9 @@ struct Reverse<Typelist<>>
 template <typename Head, typename... TArgs>
 struct Reverse<Typelist<Head, TArgs...>>
 {
-    using Result = typename Append<Typelist<TArgs...>, Head>::Result;
+    using Result = typename Append<typename Reverse<Typelist<TArgs...>>::Result,
+                                   Head
+                                   >::Result;
 };
 
 
