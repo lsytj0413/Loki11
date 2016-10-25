@@ -164,8 +164,11 @@ struct NoDuplicatesImp<Typelist<Head, TArgs...>, Typelist<UArgs...>>
                                   >::type
 {};
 
+template <typename... T>
+struct NoDuplicates;
+
 template <typename... TArgs>
-struct NoDuplicates : public NoDuplicatesImp<Typelist<TArgs...>, Typelist<>>
+struct NoDuplicates<Typelist<TArgs...>> : public NoDuplicatesImp<Typelist<TArgs...>, Typelist<>>
 {};
 
 

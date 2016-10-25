@@ -1,5 +1,8 @@
 #include "typelistTest.h"
 
+#include <iostream>
+using namespace std;
+
 #include <Loki11/Typelist.hpp>
 using namespace Loki11;
 
@@ -141,7 +144,25 @@ TEST_F(TypelistTest, testEraseAll)
 
 TEST_F(TypelistTest, testNoDuplicates)
 {
+    using T1 = Typelist<>;
+    using T2 = typename NoDuplicates<T1>::Result;
+    auto v = std::is_same<Typelist<>, T2>::value;
+    EXPECT_EQ(v, true);
 
+    using T3 = Typelist<int, char>;
+    using T4 = typename NoDuplicates<T3>::Result;
+    v = std::is_same<Typelist<int, char>, T4>::value;
+    EXPECT_EQ(v, true);
+
+    using T5 = Typelist<int, char, int, int>;
+    using T6 = typename NoDuplicates<T3>::Result;
+    v = std::is_same<Typelist<int, char>, T6>::value;
+    EXPECT_EQ(v, true);
+
+    using T7 = Typelist<int, char, char, int, double, float, char, int>;
+    using T8 = typename NoDuplicates<T7>::Result;
+    v = std::is_same<Typelist<int, char, double, float>, T8>::value;
+    EXPECT_EQ(v, true);
 }
 
 TEST_F(TypelistTest, testReplace)
