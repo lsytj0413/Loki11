@@ -9,8 +9,7 @@ namespace Loki11
 {
 
 template <typename... TArgs>
-struct Typelist
-{};
+struct Typelist {};
 
 
 template <class TL>
