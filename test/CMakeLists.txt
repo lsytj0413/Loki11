@@ -7,6 +7,7 @@ set (CMAKE_CXX_FLAGS "-std=c++14")
 SET (TEST_SRC
   main.cpp
   )
+aux_source_directory(src TEST_SRC)
 
 include_directories(../)
 
