@@ -16,10 +16,8 @@ template <class TL>
 struct Length;
 
 template <typename... TArgs>
-struct Length<Typelist<TArgs...>>
-{
-    static const int value = sizeof...(TArgs);
-};
+struct Length<Typelist<TArgs...>> : public std::integral_constant<int, sizeof...(TArgs)>
+{};
 
 
 template <typename T, unsigned int index>
@@ -94,6 +92,12 @@ struct Append<Typelist<TArgs...>, Typelist<T...>>
 template <typename... T>
 struct EraseImp;
 
+template <typename T, typename... UArgs>
+struct EraseImp<Typelist<>, T, Typelist<UArgs...>>
+{
+    using Result = Typelist<UArgs...>;
+};
+
 template <typename T, typename... TArgs, typename... UArgs>
 struct EraseImp<Typelist<T, TArgs...>, T, Typelist<UArgs...>>
 {
@@ -103,7 +107,7 @@ struct EraseImp<Typelist<T, TArgs...>, T, Typelist<UArgs...>>
 template <typename T, typename Head, typename... TArgs, typename... UArgs>
 struct EraseImp<Typelist<Head, TArgs...>, T, Typelist<UArgs...>>
 {
-    using Result = typename EraseImp<Typelist<TArgs...>, T, Typelist<UArgs..., Head>>::type;
+    using Result = typename EraseImp<Typelist<TArgs...>, T, Typelist<UArgs..., Head>>::Result;
 };
 
 template <typename... T>
