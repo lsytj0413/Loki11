@@ -1,3 +1,9 @@
+// @file static_check.h
+// @brief 编译期assert
+// @author
+// @version
+// @date
+
 #pragma once
 
 
@@ -15,7 +21,9 @@ struct CompileTimeChecker<false> {};
 
 }
 
-// C++11: 使用 static_asser t
+// @macro: STATIC_CHECK
+// @brief: 编译期assert实现宏
+// @C++11: 使用static_assert
 #define STATIC_CHECK(expr, msg)                     \
     { \
         class ERROR_##msg {}; \
