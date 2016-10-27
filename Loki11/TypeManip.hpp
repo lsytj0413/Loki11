@@ -1,11 +1,20 @@
+// @file TypeManip.hpp
+// @brief 一些类型判断相关类
+// @author
+// @version
+// @date
+
 #pragma once
 
 #include <type_traits>
 
+
 namespace Loki11
 {
 
-// C++11: 使用std::integral_constant
+// @struct Int2Type
+// @brief 将整数转换为类型
+// @c++11 o使用std::integral_constant
 template <int v>
 struct Int2Type : public std::integral_constant<int, v>
 {};
