@@ -1,3 +1,9 @@
+// @file Typelist.hpp
+// @brief 类型列表
+// @author
+// @version
+// @date
+
 #pragma once
 
 #include <type_traits>
@@ -8,10 +14,14 @@
 namespace Loki11
 {
 
+// @struct Typelist
+// @brief 类型列表容器
 template <typename... TArgs>
 struct Typelist {};
 
 
+// @struct Length
+// @brief 获取Typelist中的类型个数
 template <class TL>
 struct Length;
 
@@ -20,6 +30,9 @@ struct Length<Typelist<TArgs...>> : public std::integral_constant<int, sizeof...
 {};
 
 
+// @struct TypeAt
+// @brief 获取对应index的具体类型
+//        当index不存在时编译错误
 template <typename T, unsigned int index>
 struct TypeAt;
 
@@ -35,6 +48,9 @@ struct TypeAt<Typelist<Head, TArgs...>, i>
     using Result = typename TypeAt<Typelist<TArgs...>, i-1>::Result;
 };
 
+
+// @struct TypeAtNonStrict
+// @brief 获取对应index的具体类型, index不存在时返回DefaultType
 template <typename T, unsigned int index, typename DefaultType = NullType>
 struct TypeAtNonStrict
 {
@@ -54,6 +70,9 @@ struct TypeAtNonStrict<Typelist<Head, TArgs...>, i, DefaultType>
 };
 
 
+// @struct IndexOf
+// @brief 获取对应类型的index, 不存在则返回-1
+//        当有多个时返回第一个
 template <typename TL, typename T>
 struct IndexOf;
 
@@ -73,6 +92,9 @@ struct IndexOf<Typelist<Head, TArgs...>, T>
           >::type
 {};
 
+
+// @struct Append
+// @brief 向Typelist中添加类型, 当添加的类型是Typelist时则合并
 template <typename... T>
 struct Append;
 
@@ -110,6 +132,10 @@ struct EraseImp<Typelist<Head, TArgs...>, T, Typelist<UArgs...>>
     using Result = typename EraseImp<Typelist<TArgs...>, T, Typelist<UArgs..., Head>>::Result;
 };
 
+
+// @struct Erase
+// @brief 从Typelist中删除某个类型
+//        当有多个时删除第一个
 template <typename... T>
 struct Erase;
 
@@ -138,6 +164,9 @@ struct EraseAllImp<Typelist<Head, TArgs...>, T, Typelist<UArgs...>>
         : public EraseAllImp<Typelist<TArgs...>, T, Typelist<UArgs..., Head>>
 {};
 
+
+// @struct EraseAll
+// @brief 从Typelist中删除所有的某个类型
 template <typename... T>
 struct EraseAll;
 
@@ -164,6 +193,9 @@ struct NoDuplicatesImp<Typelist<Head, TArgs...>, Typelist<UArgs...>>
                                   >::type
 {};
 
+
+// @struct NoDuplicates
+// @brief 删除重复的类型, 保留一个
 template <typename... T>
 struct NoDuplicates;
 
@@ -192,6 +224,9 @@ struct ReplaceImp<Typelist<Head, TArgs...>, T, U, Typelist<UArgs...>>
         : public ReplaceImp<Typelist<TArgs...>, T, U, Typelist<UArgs..., Head>>
 {};
 
+
+// @struct Replace
+// @brief 将Typelist中的某个类型(第一个)替换为另一个类型
 template <typename... T>
 struct Replace;
 
@@ -199,6 +234,7 @@ template <typename... TArgs, typename T, typename U>
 struct Replace<Typelist<TArgs...>, T, U>
         : public ReplaceImp<Typelist<TArgs...>, T, U, Typelist<>>
 {};
+
 
 template <typename... T>
 struct ReplaceAllImp;
@@ -219,6 +255,9 @@ struct ReplaceAllImp<Typelist<Head, TArgs...>, T, U, Typelist<UArgs...>>
         : public ReplaceAllImp<Typelist<TArgs...>, T, U, Typelist<UArgs..., Head>>
 {};
 
+
+// @struct ReplaceAll
+// @brief 将Typelist中的某个类型(所有)替换为另一个类型
 template <typename... T>
 struct ReplaceAll;
 
@@ -228,6 +267,8 @@ struct ReplaceAll<Typelist<TArgs...>, T, U>
 {};
 
 
+// @struct Reverse
+// @brief 反转Typelist
 template <typename... T>
 struct Reverse;
 
@@ -246,6 +287,8 @@ struct Reverse<Typelist<Head, TArgs...>>
 };
 
 
+// @struct MostDerived
+// @brief 获取最底层的派生类
 template <typename... T>
 struct MostDerived;
 
@@ -264,6 +307,8 @@ struct MostDerived<Typelist<Head, TArgs...>, T>
 {};
 
 
+// @struct DerivedToFront
+// @brief 将所有的派生类排序到父类之前
 template <typename... T>
 struct DerivedToFront;
 
