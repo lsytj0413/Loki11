@@ -63,12 +63,32 @@ TEST_F(HierarchyGenTest, testScatterMulti)
     EXPECT_EQ(v, true);
     v = std::is_same<T6, T4::RightBase>::value;
     EXPECT_EQ(v, true);
-
 }
 
 
 TEST_F(HierarchyGenTest, testFieldT)
-{}
+{
+    using T1 = GenScatterHierarchy<Typelist<int, char, double>, ScatUnit>;
+    auto v = T1();
+
+    auto v1 = Field<int>(v);
+    auto b = std::is_same<int, decltype(v1.i)>::value;
+    EXPECT_EQ(b, true);
+
+    auto v2 = Field<char>(T1());
+    b = std::is_same<char, decltype(v2.i)>::value;
+    EXPECT_EQ(b, true);
+
+    auto v3 = Field<double>(v);
+    b = std::is_same<double, decltype(v3.i)>::value;
+    EXPECT_EQ(b, true);
+
+    // compile error:  ambiguous base
+    // using T2 = GenScatterHierarchy<Typelist<int, char, int>, ScatUnit>;
+    // auto v4 = Field<int>(T2());
+    // b = std::is_same<double, decltype(v4.i)>::value;
+    // EXPECT_EQ(b, true);
+}
 
 
 TEST_F(HierarchyGenTest, testFieldI)

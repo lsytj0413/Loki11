@@ -50,6 +50,12 @@ Unit<T>& Field(GenScatterHierarchy<Typelist<TArgs...>, Unit>& obj)
     return obj;
 };
 
+template <class T, class... TArgs, template <class> class Unit>
+const Unit<T>& Field(const GenScatterHierarchy<Typelist<TArgs...>, Unit>& obj)
+{
+    return obj;
+};
+
 namespace detail
 {
 
