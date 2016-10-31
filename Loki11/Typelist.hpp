@@ -111,6 +111,9 @@ struct Append<Typelist<TArgs...>, Typelist<T...>>
 };
 
 
+namespace detail
+{
+
 template <typename... T>
 struct EraseImp;
 
@@ -132,6 +135,8 @@ struct EraseImp<Typelist<Head, TArgs...>, T, Typelist<UArgs...>>
     using Result = typename EraseImp<Typelist<TArgs...>, T, Typelist<UArgs..., Head>>::Result;
 };
 
+}
+
 
 // @struct Erase
 // @brief 从Typelist中删除某个类型
@@ -141,9 +146,12 @@ struct Erase;
 
 template <typename T, typename... TArgs>
 struct Erase<Typelist<TArgs...>, T>
-        : public EraseImp<Typelist<TArgs...>, T, Typelist<>>
+        : public detail::EraseImp<Typelist<TArgs...>, T, Typelist<>>
 {};
 
+
+namespace detail
+{
 
 template <typename... T>
 struct EraseAllImp;
@@ -164,6 +172,8 @@ struct EraseAllImp<Typelist<Head, TArgs...>, T, Typelist<UArgs...>>
         : public EraseAllImp<Typelist<TArgs...>, T, Typelist<UArgs..., Head>>
 {};
 
+}
+
 
 // @struct EraseAll
 // @brief 从Typelist中删除所有的某个类型
@@ -172,9 +182,12 @@ struct EraseAll;
 
 template <typename T, typename... TArgs>
 struct EraseAll<Typelist<TArgs...>, T>
-        : public EraseAllImp<Typelist<TArgs...>, T, Typelist<>>
+        : public detail::EraseAllImp<Typelist<TArgs...>, T, Typelist<>>
 {};
 
+
+namespace detail
+{
 
 template <typename... T>
 struct NoDuplicatesImp;
@@ -190,8 +203,10 @@ struct NoDuplicatesImp<Typelist<Head, TArgs...>, Typelist<UArgs...>>
         : public std::conditional<(-1 == IndexOf<Typelist<UArgs...>, Head>::value),
         NoDuplicatesImp<Typelist<TArgs...>, Typelist<UArgs..., Head>>,
         NoDuplicatesImp<Typelist<TArgs...>, Typelist<UArgs...>>
-                                  >::type
+        >::type
 {};
+
+}
 
 
 // @struct NoDuplicates
@@ -200,9 +215,13 @@ template <typename... T>
 struct NoDuplicates;
 
 template <typename... TArgs>
-struct NoDuplicates<Typelist<TArgs...>> : public NoDuplicatesImp<Typelist<TArgs...>, Typelist<>>
+struct NoDuplicates<Typelist<TArgs...>>
+        : public detail::NoDuplicatesImp<Typelist<TArgs...>, Typelist<>>
 {};
 
+
+namespace detail
+{
 
 template <typename... T>
 struct ReplaceImp;
@@ -224,6 +243,8 @@ struct ReplaceImp<Typelist<Head, TArgs...>, T, U, Typelist<UArgs...>>
         : public ReplaceImp<Typelist<TArgs...>, T, U, Typelist<UArgs..., Head>>
 {};
 
+}
+
 
 // @struct Replace
 // @brief 将Typelist中的某个类型(第一个)替换为另一个类型
@@ -232,9 +253,12 @@ struct Replace;
 
 template <typename... TArgs, typename T, typename U>
 struct Replace<Typelist<TArgs...>, T, U>
-        : public ReplaceImp<Typelist<TArgs...>, T, U, Typelist<>>
+        : public detail::ReplaceImp<Typelist<TArgs...>, T, U, Typelist<>>
 {};
 
+
+namespace detail
+{
 
 template <typename... T>
 struct ReplaceAllImp;
@@ -255,6 +279,8 @@ struct ReplaceAllImp<Typelist<Head, TArgs...>, T, U, Typelist<UArgs...>>
         : public ReplaceAllImp<Typelist<TArgs...>, T, U, Typelist<UArgs..., Head>>
 {};
 
+}
+
 
 // @struct ReplaceAll
 // @brief 将Typelist中的某个类型(所有)替换为另一个类型
@@ -263,7 +289,7 @@ struct ReplaceAll;
 
 template <typename... TArgs, typename T, typename U>
 struct ReplaceAll<Typelist<TArgs...>, T, U>
-        : public ReplaceAllImp<Typelist<TArgs...>, T, U, Typelist<>>
+        : public detail::ReplaceAllImp<Typelist<TArgs...>, T, U, Typelist<>>
 {};
 
 

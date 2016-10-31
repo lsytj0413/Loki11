@@ -1,3 +1,9 @@
+// @file HierarchyGenerator.hpp
+// @brief 类自动生成模板
+// @author
+// @version
+// @date
+
 #pragma once
 
 #include "Typelist.hpp"
@@ -7,6 +13,8 @@
 namespace Loki11
 {
 
+// @class GenScatterHierarchy
+// @brief 散乱继承模板
 template <typename T, template <class> class Unit>
 class GenScatterHierarchy;
 
@@ -31,11 +39,17 @@ public:
     using RightBase = GenScatterHierarchy<Typelist<TArgs...>, Unit>;
 };
 
+
+// @function
+// @brief 将散乱生成的类转换为基类类型(按类型)
+// @param obj: 生成类
+// @return Unit<T>的引用
 template <class T, class... TArgs, template <class> class Unit>
 Unit<T>& Field(GenScatterHierarchy<Typelist<TArgs...>, Unit>& obj)
 {
     return obj;
 };
+
 
 template <template <class> class Unit, typename Head, typename... TArgs>
 Unit<Head>& FieldHelper(GenScatterHierarchy<Typelist<Head, TArgs...>, Unit>& obj,
@@ -53,12 +67,18 @@ Unit<Head>& FieldHelper(GenScatterHierarchy<Typelist<Head, TArgs...>, Unit>& obj
     return FieldHelper(rightBase, Int2Type<i-1>());
 };
 
+
+// @function
+// @brief 将散乱生成的类转换为基类类型(按索引)
+// @param obj: 生成类
+// @return Unit<typename TypeAt<Typelist<TArgs...>, i>::Result>的引用
 template <int i, class... TArgs, template <class> class Unit>
 Unit<typename TypeAt<Typelist<TArgs...>, i>::Result>&
 Field(GenScatterHierarchy<Typelist<TArgs...>, Unit>& obj)
 {
     return FieldHelper(obj, Int2Type<i>());
 };
+
 
 template <class T>
 struct TupleUnit
@@ -73,6 +93,9 @@ struct TupleUnit
 };
 
 
+// @struct Tuple
+// @brief tuple的实现, 可容纳多个不同类型的值的容器
+// @c++11 使用std::tuple
 template <typename TL>
 struct Tuple : public GenScatterHierarchy<TL, TupleUnit>
 {};
@@ -81,6 +104,9 @@ template <typename... TArgs>
 struct Tuple<Typelist<TArgs...>> : public GenScatterHierarchy<Typelist<TArgs...>, TupleUnit>
 {};
 
+
+// @class GenLinearHierarchy
+// @brief 生成线性继承类
 template <typename T, template <class, class> class Unit>
 class GenLinearHierarchy;
 
