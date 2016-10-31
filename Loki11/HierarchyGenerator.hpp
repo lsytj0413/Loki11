@@ -13,10 +13,24 @@
 namespace Loki11
 {
 
+
 // @class GenScatterHierarchy
 // @brief 散乱继承模板
 template <typename T, template <class> class Unit>
 class GenScatterHierarchy;
+
+namespace detail
+{
+
+template <typename T, template <class> class Unit>
+class ScatterHierarchySign;
+
+template <typename Head, typename... TArgs, template <class> class Unit>
+class ScatterHierarchySign<Typelist<Head, TArgs...>, Unit>
+        : public GenScatterHierarchy<Head, Unit>
+{};
+
+}
 
 template <typename T, template <class> class Unit>
 class GenScatterHierarchy : public Unit<T>
@@ -31,47 +45,33 @@ class GenScatterHierarchy<Typelist<>, Unit>
 
 template <typename Head, typename... TArgs, template <class> class Unit>
 class GenScatterHierarchy<Typelist<Head, TArgs...>, Unit>
-        : public GenScatterHierarchy<Head, Unit>
+        : public detail::ScatterHierarchySign<Typelist<Head, TArgs...>, Unit>
         , public GenScatterHierarchy<Typelist<TArgs...>, Unit>
 {
 public:
-    using LeftBase = GenScatterHierarchy<Head, Unit>;
+    using LeftBase = detail::ScatterHierarchySign<Typelist<Head, TArgs...>, Unit>;
     using RightBase = GenScatterHierarchy<Typelist<TArgs...>, Unit>;
 };
 
-
-// @function
-// @brief 将散乱生成的类转换为基类类型(按类型)
-// @param obj: 生成类
-// @return Unit<T>的引用
-template <class T, class... TArgs, template <class> class Unit>
-Unit<T>& Field(GenScatterHierarchy<Typelist<TArgs...>, Unit>& obj)
-{
-    return obj;
-};
-
-template <class T, class... TArgs, template <class> class Unit>
-const Unit<T>& Field(const GenScatterHierarchy<Typelist<TArgs...>, Unit>& obj)
-{
-    return obj;
-};
 
 namespace detail
 {
 
 template <template <class> class Unit, typename Head, typename... TArgs>
 Unit<Head>& FieldHelper(GenScatterHierarchy<Typelist<Head, TArgs...>, Unit>& obj,
-                        Int2Type<0>)
+                        const Int2Type<0>)
 {
-    GenScatterHierarchy<Typelist<Head, TArgs...>, Unit>& leftBase = obj;
+    typename GenScatterHierarchy<Typelist<Head, TArgs...>, Unit>::LeftBase& leftBase = obj;
     return leftBase;
 };
 
 template <int i, template <class> class Unit, typename Head, typename... TArgs>
-Unit<Head>& FieldHelper(GenScatterHierarchy<Typelist<Head, TArgs...>, Unit>& obj,
-                        Int2Type<i>)
+Unit<typename TypeAt<Typelist<Head, TArgs...>, i>::Result>&
+FieldHelper(GenScatterHierarchy<Typelist<Head, TArgs...>, Unit>& obj,
+                        const Int2Type<i>)
 {
     GenScatterHierarchy<Typelist<TArgs...>, Unit>& rightBase = obj;
+    // typename GenScatterHierarchy<Typelist<Head, TArgs...>, Unit>::RightBase& rightBase = obj;
     return FieldHelper(rightBase, Int2Type<i-1>());
 };
 
@@ -88,6 +88,37 @@ Field(GenScatterHierarchy<Typelist<TArgs...>, Unit>& obj)
 {
     return detail::FieldHelper(obj, Int2Type<i>());
 };
+
+template <int i, class... TArgs, template <class> class Unit>
+const Unit<typename TypeAt<Typelist<TArgs...>, i>::Result>&
+Field(const GenScatterHierarchy<Typelist<TArgs...>, Unit>& obj)
+{
+    return detail::FieldHelper(
+        const_cast<GenScatterHierarchy<Typelist<TArgs...>, Unit>&>(obj),
+        Int2Type<i>());
+};
+
+
+// @function
+// @brief 将散乱生成的类转换为基类类型(按类型)
+// @param obj: 生成类
+// @return Unit<T>的引用
+template <class T, class... TArgs, template <class> class Unit>
+Unit<T>& Field(GenScatterHierarchy<Typelist<TArgs...>, Unit>& obj)
+{
+    return Field<
+        IndexOf<Typelist<TArgs...>, T>::value
+        >(obj);
+};
+
+template <class T, class... TArgs, template <class> class Unit>
+const Unit<T>& Field(const GenScatterHierarchy<Typelist<TArgs...>, Unit>& obj)
+{
+    return Field<
+        IndexOf<Typelist<TArgs...>, T>::value
+        >(obj);
+};
+
 
 namespace detail
 {
