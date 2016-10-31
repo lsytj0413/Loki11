@@ -50,6 +50,8 @@ Unit<T>& Field(GenScatterHierarchy<Typelist<TArgs...>, Unit>& obj)
     return obj;
 };
 
+namespace detail
+{
 
 template <template <class> class Unit, typename Head, typename... TArgs>
 Unit<Head>& FieldHelper(GenScatterHierarchy<Typelist<Head, TArgs...>, Unit>& obj,
@@ -67,6 +69,8 @@ Unit<Head>& FieldHelper(GenScatterHierarchy<Typelist<Head, TArgs...>, Unit>& obj
     return FieldHelper(rightBase, Int2Type<i-1>());
 };
 
+}
+
 
 // @function
 // @brief 将散乱生成的类转换为基类类型(按索引)
@@ -76,9 +80,11 @@ template <int i, class... TArgs, template <class> class Unit>
 Unit<typename TypeAt<Typelist<TArgs...>, i>::Result>&
 Field(GenScatterHierarchy<Typelist<TArgs...>, Unit>& obj)
 {
-    return FieldHelper(obj, Int2Type<i>());
+    return detail::FieldHelper(obj, Int2Type<i>());
 };
 
+namespace detail
+{
 
 template <class T>
 struct TupleUnit
@@ -92,16 +98,18 @@ struct TupleUnit
     };
 };
 
+}
+
 
 // @struct Tuple
 // @brief tuple的实现, 可容纳多个不同类型的值的容器
 // @c++11 使用std::tuple
 template <typename TL>
-struct Tuple : public GenScatterHierarchy<TL, TupleUnit>
+struct Tuple : public GenScatterHierarchy<TL, detail::TupleUnit>
 {};
 
 template <typename... TArgs>
-struct Tuple<Typelist<TArgs...>> : public GenScatterHierarchy<Typelist<TArgs...>, TupleUnit>
+struct Tuple<Typelist<TArgs...>> : public GenScatterHierarchy<Typelist<TArgs...>, detail::TupleUnit>
 {};
 
 
