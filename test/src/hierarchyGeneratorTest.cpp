@@ -10,7 +10,7 @@ template <typename T>
 struct ScatUnit
 {
 public:
-    T i;
+    T i = 0;
 };
 
 
@@ -149,8 +149,61 @@ TEST_F(HierarchyGenTest, testFieldI)
 
 
 TEST_F(HierarchyGenTest, testTuple)
-{}
+{
+    using T1 = GenScatterHierarchy<Typelist<int, char, double, int>, ScatUnit>;
+    auto v = T1();
+
+    auto sum = Field<0>(v).i + Field<1>(v).i + Field<2>(v).i + Field<3>(v).i;
+    EXPECT_EQ(sum, 0);
+
+    Field<0>(v).i = 10;
+    Field<1>(v).i = 15;
+    Field<2>(v).i = 30;
+    Field<3>(v).i = 105;
+
+    sum = Field<0>(v).i + Field<1>(v).i + Field<2>(v).i + Field<3>(v).i;
+    EXPECT_EQ(sum, 160);
+}
 
 
-TEST_F(HierarchyGenTest, testLinear)
-{}
+template <typename T, typename U>
+struct ScatLinear {
+    T i;
+};
+
+TEST_F(HierarchyGenTest, testLinearZero)
+{
+    class Em {};
+
+    using T1 = GenLinearHierarchy<Typelist<>, ScatLinear>;
+    EXPECT_EQ(sizeof(Em), sizeof(T1));
+}
+
+TEST_F(HierarchyGenTest, testLinearOne)
+{
+    using T1 = GenLinearHierarchy<Typelist<int>, ScatLinear>;
+    EXPECT_EQ(sizeof(int), sizeof(T1));
+
+    auto v = std::is_same<decltype(T1().i), int>::value;
+    EXPECT_EQ(v, true);
+}
+
+template <typename T, typename U>
+struct ScatLinearEvent : public U{
+public:
+    virtual T on_event(const T) = 0;
+};
+
+class EventObj : public GenLinearHierarchy<Typelist<int, double>, ScatLinearEvent>
+{
+public:
+    virtual int on_event(const int) {return 100;};
+    virtual double on_event(const double) {return 2.2;};
+};
+
+TEST_F(HierarchyGenTest, testLinearMulti)
+{
+    EventObj obj;
+    EXPECT_EQ(obj.on_event(2), 100);
+    EXPECT_EQ(2.2, obj.on_event(1.2));
+}
