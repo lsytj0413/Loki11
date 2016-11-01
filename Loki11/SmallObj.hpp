@@ -6,6 +6,9 @@
 #include <algorithm>
 #include <limits.h>
 
+#include "Threads.hpp"
+
+
 #ifndef DEFAULT_CHUNK_SIZE
 #define DEFAULT_CHUNK_SIZE 4096
 #endif
@@ -354,7 +357,7 @@ public:
     static void* operator new(std::size_t size)
     {
 #if (MAX_SMALL_OBJECT_SIZE != 0) && (DEFAULT_CHUNK_SIZE != 0)
-        using Lock = MyThreadingModel::Lock;
+        using Lock = typename MyThreadingModel::Lock;
         Lock lock;
         (void)lock;
 
