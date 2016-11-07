@@ -10,9 +10,12 @@
 #include <atomic>
 
 
+// @c++11 使用std::thread及相关组件
 namespace Loki11
 {
 
+// @class SingleThreaded
+// @brief 单线程模型
 template <class Host>
 class SingleThreaded
 {
@@ -25,40 +28,77 @@ public:
     using VolatileType = Host;
     using IntType = int;
 
+    // @function
+    // @brief 原子加
+    // @param lval: 待增加值
+    // @param val: 增加值
+    // @return IntType
     static IntType AtomicAdd(volatile IntType& lval, IntType val) {
         return lval += val;
     };
 
+    // @function
+    // @brief 原子减
+    // @param lval: 待减值
+    // @param val: 减值
+    // @return IntType
     static IntType AtomicSubtract(volatile IntType& lval, IntType val) {
         return lval -= val;
     };
 
+    // @function
+    // @brief 原子乘
+    // @param lval: 待乘值
+    // @param val: 乘值
+    // @return IntType
     static IntType AtomicMultiply(volatile IntType& lval, IntType val) {
         return lval *= val;
     };
 
+    // @function
+    // @brief 原子除
+    // @param lval: 待除值
+    // @param val: 除值
+    // @return IntType
     static IntType AtomicDivide(volatile IntType& lval, IntType val) {
         return lval /= val;
     };
 
+    // @function
+    // @brief 原子自增
+    // @param lval: 自增值
+    // @return IntType
     static IntType AtomicIncrement(volatile IntType& lval) {
         return ++lval;
     };
 
+    // @function
+    // @brief 原子自减
+    // @param lval: 自减值
+    // @return IntType
     static IntType AtomicDecrement(volatile IntType& lval) {
         return --lval;
     };
 
+    // @function
+    // @brief 原子赋值
+    // @param lval: 被赋值值
+    // @param val: 新值
     static void AtomicAssign(volatile IntType& lval, IntType val) {
         lval = val;
     };
 
+    // @function
+    // @brief 原子赋值
+    // @param lval: 被赋值值
+    // @param val: 新值
     static void AtomicAssign(IntType& lval, volatile IntType val) {
         lval = val;
     };
 };
 
-
+// @class ObjectLevelLockable
+// @brief 对象层次多线程模型
 template <class Host>
 class ObjectLevelLockable
 {
@@ -113,7 +153,8 @@ public:
     }
 };
 
-
+// @class ClassLevelLockable
+// @brief 类层次多线程模型
 template <class Host>
 class ClassLevelLockable
 {
