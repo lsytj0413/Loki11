@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <new>
 #include <algorithm>
+#include <cstddef>
 
 
 namespace Loki11
@@ -146,6 +147,18 @@ struct CreateUsingMalloc
 };
 
 
+template <class T>
+struct CreateStatic
+{
+    static T* Create() {
+        static std::max_align_t staticMem;
+        return new(&staticMem) T;
+    };
+
+    static void Destory(T* p) {
+        p->~T();
+    };
+};
 
 
 }
