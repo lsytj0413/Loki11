@@ -245,18 +245,57 @@ template <typename T,
 class SingletonHolder
 {
 private:
-    static void MakeInstance();
-    static void DestroySingleton();
+    static void MakeInstance() {
+        typename ThreadingModel<T>::Lock guard;
+        (void)guard;
 
-    SingletonHolder();
+        if (!m_instance) {
+            if (m_destroyed) {
+                LifetimePolicy<T>::OnDeadReference();
+                m_destroyed = false;
+            }
+
+            m_instance = CreationPolicy<T>::Create();
+            LifetimePolicy<T>::ScheduleDestruction(m_instance, &DestroySingleton);
+        }
+    };
+
+    static void DestroySingleton() {
+        assert(!m_destroyed);
+
+        CreationPolicy<T>::Destory(m_instance);
+        m_instance = nullptr;
+        m_destroyed = true;
+    };
+
+    SingletonHolder() {};
 
     using PtrInstanceType = typename ThreadingModel<T*>::VolatileType;
     static PtrInstanceType m_instance;
     static bool m_destroyed;
 
 public:
-    static T& Instance();
+    static T& Instance() {
+        if (!m_instance) {
+            MakeInstance();
+        }
+
+        return m_instance;
+    };
 };
 
+template <class T,
+          template <class> class C,
+          template <class> class L,
+          template <class> class M
+          >
+typename SingletonHolder<T, C, L, M>::PtrInstanceType SingletonHolder<T, C, L, M>::m_instance = nullptr;
+
+template <class T,
+          template <class> class C,
+          template <class> class L,
+          template <class> class M
+          >
+bool SingletonHolder<T, C, L, M>::m_destroyed = false;
 
 }
