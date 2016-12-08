@@ -13,6 +13,8 @@
 #include <cstddef>
 #include <stdexcept>
 
+#include "Threads.hpp"
+
 
 namespace Loki11
 {
@@ -224,6 +226,36 @@ public:
     static void OnDeadReference() {
         throw std::logic_error("Dead Reference Detected");
     };
+};
+
+
+template <class T>
+struct NoDestory
+{
+    static void ScheduleDestruction(T*, atexit_pfn_t fn) {};
+    static void OnDeadReference() {};
+};
+
+
+template <typename T,
+          template <class> class CreationPolicy = CreateUsingNew,
+          template <class> class LifetimePolicy = DefaultLifetime,
+          template <class> class ThreadingModel = SingleThreaded
+          >
+class SingletonHolder
+{
+private:
+    static void MakeInstance();
+    static void DestroySingleton();
+
+    SingletonHolder();
+
+    using PtrInstanceType = typename ThreadingModel<T*>::VolatileType;
+    static PtrInstanceType m_instance;
+    static bool m_destroyed;
+
+public:
+    static T& Instance();
 };
 
 
