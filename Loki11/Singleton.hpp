@@ -113,4 +113,39 @@ void SetLongevity(T* pDynObj, unsigned int longevity, Destroyer d = Private::Del
     std::atexit(Private::AtExitFn);
 };
 
+
+template <class T>
+struct CreateUsingNew
+{
+    static T* Create() {
+        return new T;
+    };
+
+    static void Destory(T* p) {
+        delete p;
+    };
+};
+
+
+template <class T>
+struct CreateUsingMalloc
+{
+    static T* Create() {
+        void *p = std::malloc(sizeof(T));
+        if (!p) {
+            return nullptr;
+        }
+
+        return new(p) T;
+    };
+
+    static void Destory(T* p) {
+        p->~T();
+        std::free(p);
+    };
+};
+
+
+
+
 }
