@@ -175,6 +175,28 @@ struct DefaultLifetime
 };
 
 
+template <class T>
+class PhoenixSingleton
+{
+private:
+    static bool m_destroy_once;
+
+public:
+    static void ScheduleDestruction(T*, atexit_pfn_t fn) {
+        if(m_destroy_once) {
+            std::atexit(fn);
+        }
+    };
+
+    static void OnDeadReference() {
+        m_destroy_once = true;
+    };
+};
+
+template <class T>
+bool PhoenixSingleton<T>::m_destroy_once = false;
+
+
 
 
 }
