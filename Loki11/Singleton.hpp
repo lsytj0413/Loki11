@@ -197,6 +197,34 @@ template <class T>
 bool PhoenixSingleton<T>::m_destroy_once = false;
 
 
+namespace Private
+{
+
+template <class T>
+struct Adapter
+{
+    atexit_pfn_t m_fn;
+    void operator()(T*) {
+        return m_fn();
+    };
+};
+
+}
+
+
+template <class T>
+class SingletonWithLongevity
+{
+public:
+    static void ScheduleDestruction(T* pObj, atexit_pfn_t fn) {
+        Private::Adapter<T> adapter { fn };
+        SetLongevity(pObj, GetLongevity(pObj), adapter);
+    };
+
+    static void OnDeadReference() {
+        throw std::logic_error("Dead Reference Detected");
+    };
+};
 
 
 }
