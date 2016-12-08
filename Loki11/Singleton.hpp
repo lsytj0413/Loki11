@@ -31,6 +31,24 @@ public:
     }
 };
 
+inline LifetimeTracker::~LifetimeTracker() {};
+
+
+using TrackerArray = LifetimeTracker**;
+extern TrackerArray pTrackerArray;
+extern unsigned int elements;
+
+
+template <typename T>
+struct Deleter
+{
+    static void Delete(T* p) {
+        delete p;
+    }
+};
+
+
+
 }
 
 }
