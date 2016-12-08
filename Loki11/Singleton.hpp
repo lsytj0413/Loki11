@@ -11,6 +11,7 @@
 #include <new>
 #include <algorithm>
 #include <cstddef>
+#include <stdexcept>
 
 
 namespace Loki11
@@ -159,6 +160,21 @@ struct CreateStatic
         p->~T();
     };
 };
+
+
+template <class T>
+struct DefaultLifetime
+{
+    static void ScheduleDestruction(T*, atexit_pfn_t fn) {
+        std::atexit(fn);
+    };
+
+    static void OnDeadReference() {
+        throw std::logic_error("Dead Reference Detected");
+    };
+};
+
+
 
 
 }
