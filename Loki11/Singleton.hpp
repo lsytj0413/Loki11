@@ -8,6 +8,8 @@
 
 #include <cassert>
 #include <cstdlib>
+#include <new>
+#include <algorithm>
 
 
 namespace Loki11
@@ -83,7 +85,32 @@ inline void AtExitFn() {
     delete top;
 };
 
-
 }
+
+template <typename T, typename Destroyer>
+void SetLongevity(T* pDynObj, unsigned int longevity, Destroyer d = Private::Deleter<T>::Delete)
+{
+    using namespace Private;
+
+    TrackerArray pNewArray = static_cast<TrackerArray>(std::realloc(pTrackerArray,
+                                                                    sizeof(*pTrackerArray) * (elements + 1))
+                                                       );
+    if (!pNewArray) {
+        throw std::bad_alloc();
+    }
+
+    pTrackerArray = pNewArray;
+    LifetimeTracker* p = new ConcreteLifetimeTracker<T, Destroyer>(pDynObj, longevity, d);
+    TrackerArray pos = std::upper_bound(pTrackerArray,
+                                        pTrackerArray + elements,
+                                        p,
+                                        LifetimeTracker::Compare
+                                        );
+    std::copy_backward(pos, pTrackerArray + elements, pTrackerArray + elements + 1);
+    *pos = p;
+    ++elements;
+
+    std::atexit(Private::AtExitFn);
+};
 
 }
