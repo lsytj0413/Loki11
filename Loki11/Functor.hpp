@@ -7,6 +7,7 @@
 #pragma once
 
 #include <memory>
+#include <utility>
 using std::unique_ptr;
 
 #include "Typelist.hpp"
@@ -40,6 +41,10 @@ public:
     Functor(const Functor&);
     Functor& operator=(const Functor&);
     explicit Functor(std::unique_ptr<Impl> spImpl);
+
+    R operator() (TArgs&&... args) {
+        return (*m_impl)(std::forward<TArgs>(args)...);
+    };
 };
 
 
