@@ -6,6 +6,9 @@
 
 #pragma once
 
+#include <memory>
+using std::unique_ptr;
+
 #include "Typelist.hpp"
 
 
@@ -23,5 +26,23 @@ public:
     virtual FunctorImpl* Clone() const = 0;
     virtual ~FunctorImpl() {};
 };
+
+
+template <typename R, typename... TArgs>
+class Functor
+{
+private:
+    using Impl = FunctorImpl<R, TArgs...>;
+    std::unique_ptr<Impl> m_impl;
+
+public:
+    Functor();
+    Functor(const Functor&);
+    Functor& operator=(const Functor&);
+    explicit Functor(std::unique_ptr<Impl> spImpl);
+};
+
+
+
 
 }
