@@ -97,6 +97,16 @@ public:
             : m_impl(spImpl)
     {};
 
+    template <typename Fun>
+    Functor(Fun fn)
+            : m_impl(new FunctorHandler<Functor, Fun>(fn))
+    {};
+
+    template <typename PtrObj, typename MemFn>
+    Functor(const PtrObj& p, MemFn memFn)
+            :m_impl(new MemFunctorHandler<Functor, PtrObj, MemFn>(p, memFn))
+    {};
+
     R operator() (TArgs&&... args) {
         return (*m_impl)(std::forward<TArgs>(args)...);
     };
