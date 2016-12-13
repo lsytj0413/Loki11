@@ -48,6 +48,28 @@ public:
 };
 
 
+template <class ParentFunctor, typename PointorToObj, typename PointerToMemFn>
+class MemFunctorHandler : public ParentFunctor::Impl
+{
+private:
+    PointorToObj m_obj;
+    PointerToMemFn m_mem_fn;
+
+public:
+    using Base = typename ParentFunctor::Impl;
+    using ResultType = typename Base::ResultType;
+
+    MemFunctorHandler(const PointorToObj& obj, PointerToMemFn mem_fn)
+            : m_obj(obj)
+            , m_mem_fn(mem_fn)
+    {};
+
+    ResultType operator()() {
+        return ((*m_obj).*m_mem_fn());
+    }
+};
+
+
 template <typename R, typename... TArgs>
 class Functor
 {
