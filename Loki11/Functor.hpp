@@ -29,7 +29,7 @@ public:
 };
 
 
-template <class ParentFunctor, typename Fun>
+template <class ParentFunctor, typename Fun, typename... TArgs>
 class FunctorHandler : public ParentFunctor::Impl
 {
 private:
@@ -43,12 +43,13 @@ public:
             : m_fn(fun)
     {};
 
-    ResultType operator()(){
+    ResultType operator()(TArgs&&... args){
+        return m_fn(std::forward<TArgs>(args)...);
     };
 };
 
 
-template <class ParentFunctor, typename PointorToObj, typename PointerToMemFn>
+template <class ParentFunctor, typename PointorToObj, typename PointerToMemFn, typename... TArgs>
 class MemFunctorHandler : public ParentFunctor::Impl
 {
 private:
@@ -64,8 +65,8 @@ public:
             , m_mem_fn(mem_fn)
     {};
 
-    ResultType operator()() {
-        return ((*m_obj).*m_mem_fn());
+    ResultType operator()(TArgs&&... args) {
+        return ((*m_obj).*m_mem_fn(std::forward<TArgs>(args)...));
     }
 };
 
@@ -73,8 +74,11 @@ public:
 template <typename R, typename... TArgs>
 class Functor
 {
-private:
+public:
     using Impl = FunctorImpl<R, TArgs...>;
+    using ResultType = R;
+
+private:
     std::shared_ptr<Impl> m_impl;
 
 public:
@@ -99,12 +103,12 @@ public:
 
     template <typename Fun>
     Functor(Fun fn)
-            : m_impl(new FunctorHandler<Functor, Fun>(fn))
+            : m_impl(new FunctorHandler<Functor, Fun, TArgs...>(fn))
     {};
 
     template <typename PtrObj, typename MemFn>
     Functor(const PtrObj& p, MemFn memFn)
-            :m_impl(new MemFunctorHandler<Functor, PtrObj, MemFn>(p, memFn))
+            :m_impl(new MemFunctorHandler<Functor, PtrObj, MemFn, TArgs...>(p, memFn))
     {};
 
     R operator() (TArgs&&... args) {
