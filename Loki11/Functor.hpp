@@ -19,13 +19,32 @@ namespace Loki11
 template <typename... R>
 class FunctorImpl;
 
+
 template <typename R, typename... TArgs>
 class FunctorImpl<R, Typelist<TArgs...>>
 {
 public:
     virtual R operator() (TArgs&&...) = 0;
-    virtual FunctorImpl* Clone() const = 0;
     virtual ~FunctorImpl() {};
+};
+
+
+template <class ParentFunctor, typename Fun>
+class FunctorHandler : public ParentFunctor::Impl
+{
+private:
+    Fun m_fn;
+
+public:
+    using Base = typename ParentFunctor::Impl;
+    using ResultType = typename Base::ResultType;
+
+    FunctorHandler(const Fun& fun)
+            : m_fn(fun)
+    {};
+
+    ResultType operator()(){
+    };
 };
 
 
@@ -39,7 +58,9 @@ private:
 public:
     Functor();
     Functor(const Functor&);
+    Functor(Functor&&);
     Functor& operator=(const Functor&);
+    Functor& operator=(Functor&&);
     explicit Functor(std::unique_ptr<Impl> spImpl);
 
     R operator() (TArgs&&... args) {
