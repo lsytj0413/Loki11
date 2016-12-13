@@ -75,15 +75,27 @@ class Functor
 {
 private:
     using Impl = FunctorImpl<R, TArgs...>;
-    std::unique_ptr<Impl> m_impl;
+    std::shared_ptr<Impl> m_impl;
 
 public:
-    Functor();
-    Functor(const Functor&);
-    Functor(Functor&&);
-    Functor& operator=(const Functor&);
-    Functor& operator=(Functor&&);
-    explicit Functor(std::unique_ptr<Impl> spImpl);
+    Functor()
+            : m_impl(nullptr)
+    {};
+    Functor(const Functor& rhs)
+            : m_impl(rhs.m_impl)
+    {} ;
+    Functor(Functor&& rhs)
+            : m_impl(std::move(rhs.m_impl))
+    {};
+    Functor& operator=(const Functor& rhs) {
+        m_impl = rhs.m_impl;
+    };
+    Functor& operator=(Functor&& rhs){
+        m_impl = std::move(rhs.m_impl);
+    };
+    explicit Functor(std::shared_ptr<Impl>& spImpl)
+            : m_impl(spImpl)
+    {};
 
     R operator() (TArgs&&... args) {
         return (*m_impl)(std::forward<TArgs>(args)...);
