@@ -8,7 +8,7 @@
 
 #include <memory>
 #include <utility>
-using std::unique_ptr;
+using std::shared_ptr;
 
 #include "Typelist.hpp"
 
@@ -24,6 +24,8 @@ template <typename R, typename... TArgs>
 class FunctorImpl<R, Typelist<TArgs...>>
 {
 public:
+    using ResultType = R;
+
     virtual R operator() (TArgs&&...) = 0;
     virtual ~FunctorImpl() {};
 };
@@ -75,7 +77,7 @@ template <typename R, typename... TArgs>
 class Functor
 {
 public:
-    using Impl = FunctorImpl<R, TArgs...>;
+    using Impl = FunctorImpl<R, Typelist<TArgs...>>;
     using ResultType = R;
 
 private:
