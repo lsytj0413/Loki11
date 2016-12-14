@@ -117,6 +117,27 @@ public:
 };
 
 
+namespace Private
+{
+
+template <class Fctor>
+struct BinderFirstTraits;
+
+template <typename R, class TL>
+struct BinderFirstTraits<Functor<R, TL>>
+{
+    using ParmList = typename Erase<typename TypeAt<TL, 0>::Result, TL>::Result;
+    using BoundFunctorType = Functor<R, ParmList>;
+    using Impl = typename BoundFunctorType::Impl;
+};
+
+}
+
+template <class Fctor>
+auto BindFirst(const Fctor& fn, typename Fctor::Parm1 bound)
+{
+    
+}
 
 
 }
