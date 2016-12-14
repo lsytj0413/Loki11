@@ -16,9 +16,10 @@ using std::shared_ptr;
 namespace Loki11
 {
 
+// @class FunctorImpl
+// @brief Functor实现基类
 template <typename... R>
 class FunctorImpl;
-
 
 template <typename R, typename... TArgs>
 class FunctorImpl<R, Typelist<TArgs...>>
@@ -31,6 +32,8 @@ public:
 };
 
 
+// @class FunctorHandler
+// @brief 普通函数和函数对象实现类
 template <class ParentFunctor, typename Fun, typename... TArgs>
 class FunctorHandler : public ParentFunctor::Impl
 {
@@ -51,6 +54,8 @@ public:
 };
 
 
+// @class MemFunctorHandler
+// @brief 成员函数实现类
 template <class ParentFunctor, typename PointorToObj, typename PointerToMemFn, typename... TArgs>
 class MemFunctorHandler : public ParentFunctor::Impl
 {
@@ -73,6 +78,8 @@ public:
 };
 
 
+// @class Functor
+// @brief 仿函数实现
 template <typename R, typename... TArgs>
 class Functor
 {
