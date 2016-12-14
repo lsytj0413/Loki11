@@ -133,6 +133,33 @@ struct BinderFirstTraits<Functor<R, TL>>
 
 }
 
+
+template <class OriginalFunctor>
+class BinderFirst : public Private::BinderFirstTraits<OriginalFunctor>::Impl
+{
+public:
+    using Base = typename Private::BinderFirstTraits<OriginalFunctor>::Impl;
+    using ResultType = typename OriginalFunctor::ResultType;
+    using BoundType = typename OriginalFunctor::Parm1;
+
+private:
+    OriginalFunctor m_fn;
+    BoundType m_v;
+
+public:
+    BinderFirst(const OriginalFunctor& fn, BoundType b)
+            : m_fn(fn)
+            , m_v(b)
+    {};
+
+    template <typename... UArgs>
+    ResultType operator()(UArgs&&... args)
+    {
+        return m_fn(m_v, std::forward<UArgs>(args)...);
+    }
+};
+
+
 template <class Fctor>
 auto BindFirst(const Fctor& fn, typename Fctor::Parm1 bound)
 {
