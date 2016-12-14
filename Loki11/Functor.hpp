@@ -163,7 +163,10 @@ public:
 template <class Fctor>
 auto BindFirst(const Fctor& fn, typename Fctor::Parm1 bound)
 {
-    
+    using Outgoing = typename Private::BinderFirstTraits<Fctor>::BoundFunctorType;
+
+    return Outgoing(std::shared_ptr<typename Outgoing::Impl>(
+        new BinderFirst<Fctor>(fn, bound)));
 }
 
 
