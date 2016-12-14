@@ -40,3 +40,25 @@ TEST_F(FunctorTest, testOriginFunctionOneArgs)
 
     EXPECT_EQ("xxx", i2);
 }
+
+
+int test_multiargs_origin(int i, int j, int k) {
+    return i + j + k;
+}
+
+string test_multiargs_origin_str(string i, const string& j) {
+    return i + j;
+}
+
+TEST_F(FunctorTest, testOriginFunctionMultiArgs)
+{
+    auto f = Functor<int, int, int, int>(test_multiargs_origin);
+    auto i = f(1, 10, 100);
+
+    EXPECT_EQ(111, i);
+
+    auto f2 = Functor<string, string, string>(test_multiargs_origin_str);
+    auto i2 = f2("xxx", "yy");
+
+    EXPECT_EQ("xxxyy", i2);
+}
