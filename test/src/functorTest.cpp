@@ -126,3 +126,14 @@ public:
         return i + j;
     };
 };
+
+
+TEST_F(FunctorTest, testMemFunctorNonArgs)
+{
+    TestFunctor *obj = new TestFunctor;
+
+    auto f = Functor<int>(obj, &TestFunctor::test_noargs);
+    auto i = f();
+
+    EXPECT_EQ(10, i);
+}

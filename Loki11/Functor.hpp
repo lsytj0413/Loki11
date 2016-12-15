@@ -73,7 +73,7 @@ public:
     {};
 
     ResultType operator()(TArgs&&... args) {
-        return ((*m_obj).*m_mem_fn(std::forward<TArgs>(args)...));
+        return (((*m_obj).*m_mem_fn)(std::forward<TArgs>(args)...));
     }
 };
 
