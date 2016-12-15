@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <utility>
+#include <cassert>
 using std::shared_ptr;
 
 #include "Typelist.hpp"
@@ -86,6 +87,8 @@ class Functor
 public:
     using Impl = FunctorImpl<R, Typelist<TArgs...>>;
     using ResultType = R;
+    using Parm1 = typename TypeAtNonStrict<Typelist<TArgs...>, 0>::Result;
+    using ArgsList = Typelist<TArgs...>;
 
 private:
     std::shared_ptr<Impl> m_impl;
@@ -106,7 +109,7 @@ public:
     Functor& operator=(Functor&& rhs){
         m_impl = std::move(rhs.m_impl);
     };
-    explicit Functor(std::shared_ptr<Impl>& spImpl)
+    explicit Functor(const std::shared_ptr<Impl>& spImpl)
             : m_impl(spImpl)
     {};
 
@@ -123,27 +126,34 @@ public:
     R operator() (TArgs&&... args) {
         return (*m_impl)(std::forward<TArgs>(args)...);
     };
+
+    // 支持类型转换, 已经提供另一个实例化可能性
+    template <typename... UArgs>
+    R operator()(UArgs&&... args) {
+        return (*m_impl)(std::forward<TArgs>(args)...);
+    }
 };
 
 
 namespace Private
 {
 
-template <class Fctor>
+template <typename... Fctor>
 struct BinderFirstTraits;
 
-template <typename R, class TL>
-struct BinderFirstTraits<Functor<R, TL>>
+template <typename R, typename Head, typename... TL>
+struct BinderFirstTraits<Functor<R, Head, TL...>>
 {
-    using ParmList = typename Erase<typename TypeAt<TL, 0>::Result, TL>::Result;
-    using BoundFunctorType = Functor<R, ParmList>;
+    using ArgsList = Typelist<TL...>;
+    using ParmList = Typelist<TL...>;
+    using BoundFunctorType = Functor<R, TL...>;
     using Impl = typename BoundFunctorType::Impl;
 };
 
 }
 
-
-template <class OriginalFunctor>
+// OriginalFunctor 为FunctorImpl, 即BoundFunctorType::Impl
+template <class OriginalFunctor, typename Head, typename... TArgs>
 class BinderFirst : public Private::BinderFirstTraits<OriginalFunctor>::Impl
 {
 public:
@@ -152,7 +162,7 @@ public:
     using BoundType = typename OriginalFunctor::Parm1;
 
 private:
-    OriginalFunctor m_fn;
+    OriginalFunctor m_fn;    // Functor
     BoundType m_v;
 
 public:
@@ -161,21 +171,40 @@ public:
             , m_v(b)
     {};
 
-    template <typename... UArgs>
-    ResultType operator()(UArgs&&... args)
-    {
-        return m_fn(m_v, std::forward<UArgs>(args)...);
+    ResultType operator()(TArgs&&... args) {
+        // auto v{m_v};          // 不这样写不能通过编译, 因为Functor的operator已经实例化...
+        // return m_fn(std::move(v), std::forward<TArgs>(args)...);
+        return m_fn(m_v, std::forward<TArgs>(args)...);
     }
 };
+
+
+namespace Private
+{
+
+template <class Fctor, typename... TArgs>
+auto BindFirst(const Fctor& fn, typename Fctor::Parm1 bound, Typelist<TArgs...>)
+{
+    // BoundFunctorType: 为使用fn和剩余的参数构造的Functor
+    using Outgoing = typename Private::BinderFirstTraits<Fctor>::BoundFunctorType;
+    using BinderType = BinderFirst<Fctor, typename Fctor::Parm1, TArgs...>;
+
+    // static_assert(std::is_base_of<FunctorImpl<int, Typelist<>>, BinderType>::value, "");
+
+    return Outgoing(std::shared_ptr<typename Outgoing::Impl>(
+        new BinderType(fn, bound)));
+}
+
+}
 
 
 template <class Fctor>
 auto BindFirst(const Fctor& fn, typename Fctor::Parm1 bound)
 {
-    using Outgoing = typename Private::BinderFirstTraits<Fctor>::BoundFunctorType;
+    using RestArgsList = typename Erase<typename Fctor::ArgsList,
+                                        typename Fctor::Parm1>::Result;
 
-    return Outgoing(std::shared_ptr<typename Outgoing::Impl>(
-        new BinderFirst<Fctor>(fn, bound)));
+    return Private::BindFirst(fn, bound, RestArgsList{});
 }
 
 

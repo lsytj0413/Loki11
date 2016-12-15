@@ -2,6 +2,7 @@
 
 #include <string>
 #include <functional>
+#include <cassert>
 using std::function;
 using std::string;
 
@@ -168,4 +169,14 @@ TEST_F(FunctorTest, testMemFunctorMultiArgs)
     auto i2 = f2("xxx", "yy");
 
     EXPECT_EQ("xxxyy", i2);
+}
+
+
+TEST_F(FunctorTest, testBindFirstOneArgs)
+{
+    int v = 10;
+    auto f = BindFirst(Functor<int, int>(test_oneargs_origin), v);
+    // auto i = f();
+
+    // EXPECT_EQ(i, 10);
 }
