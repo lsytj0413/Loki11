@@ -87,3 +87,17 @@ TEST_F(FunctorTest, testFunctorOneArgs)
 
     EXPECT_EQ("xxx", i2);
 }
+
+
+TEST_F(FunctorTest, testFunctorMultiArgs)
+{
+    auto f = Functor<int, int, int, int>(std::function<int(int, int, int)>(test_multiargs_origin));
+    auto i = f(1, 10, 100);
+
+    EXPECT_EQ(111, i);
+
+    auto f2 = Functor<string, string, string>(std::function<string(string, string)>(test_multiargs_origin_str));
+    auto i2 = f2("xxx", "yy");
+
+    EXPECT_EQ("xxxyy", i2);
+}
