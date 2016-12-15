@@ -73,3 +73,17 @@ TEST_F(FunctorTest, testFunctorNonArgs)
 
     EXPECT_EQ(1, i);
 }
+
+
+TEST_F(FunctorTest, testFunctorOneArgs)
+{
+    auto f = Functor<int, int>(std::function<int(int)>(test_oneargs_origin));
+    auto i = f(1);
+
+    EXPECT_EQ(1, i);
+
+    auto f2 = Functor<string, string>(std::function<string(string)>(test_oneargs_origin_str));
+    auto i2 = f2("xxx");
+
+    EXPECT_EQ("xxx", i2);
+}
