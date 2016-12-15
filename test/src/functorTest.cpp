@@ -137,3 +137,19 @@ TEST_F(FunctorTest, testMemFunctorNonArgs)
 
     EXPECT_EQ(10, i);
 }
+
+
+TEST_F(FunctorTest, testMemFunctorOneArgs)
+{
+    TestFunctor *obj = new TestFunctor;
+
+    auto f = Functor<int, int>(obj, &TestFunctor::test_oneargs);
+    auto i = f(1);
+
+    EXPECT_EQ(1, i);
+
+    auto f2 = Functor<string, string>(obj, &TestFunctor::test_onargs_str);
+    auto i2 = f2("xxx");
+
+    EXPECT_EQ("xxx", i2);
+}
