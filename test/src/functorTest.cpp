@@ -101,3 +101,28 @@ TEST_F(FunctorTest, testFunctorMultiArgs)
 
     EXPECT_EQ("xxxyy", i2);
 }
+
+
+class TestFunctor
+{
+public:
+    int test_noargs() {
+        return 10;
+    };
+
+    int test_oneargs(int i) {
+        return i;
+    };
+
+    string test_onargs_str(const string& s) {
+        return s;
+    };
+
+    int test_multiargs(int i, int j, int k) {
+        return i + j + k;
+    };
+
+    string test_multiargs_str(const string& i, const string& j) {
+        return i + j;
+    };
+};
