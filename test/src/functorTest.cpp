@@ -1,6 +1,8 @@
 #include "functorTest.h"
 
 #include <string>
+#include <functional>
+using std::function;
 using std::string;
 
 #include <Loki11/Functor.hpp>
@@ -61,4 +63,13 @@ TEST_F(FunctorTest, testOriginFunctionMultiArgs)
     auto i2 = f2("xxx", "yy");
 
     EXPECT_EQ("xxxyy", i2);
+}
+
+
+TEST_F(FunctorTest, testFunctorNonArgs)
+{
+    auto f = Functor<int>(std::function<int(void)>(test_noargs_origin));
+    auto i = f();
+
+    EXPECT_EQ(1, i);
 }
