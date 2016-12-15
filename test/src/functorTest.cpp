@@ -174,9 +174,13 @@ TEST_F(FunctorTest, testMemFunctorMultiArgs)
 
 TEST_F(FunctorTest, testBindFirstOneArgs)
 {
-    int v = 10;
-    auto f = BindFirst(Functor<int, int>(test_oneargs_origin), v);
+    auto f = BindFirst(Functor<int, int>(test_oneargs_origin), 10);
     auto i = f();
 
     EXPECT_EQ(i, 10);
+
+    auto f2 = BindFirst(Functor<string, string>(test_oneargs_origin_str), "xxx");
+    auto i2 = f2();
+
+    EXPECT_EQ(i2, "xxx");
 }
