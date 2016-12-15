@@ -176,7 +176,7 @@ TEST_F(FunctorTest, testBindFirstOneArgs)
 {
     int v = 10;
     auto f = BindFirst(Functor<int, int>(test_oneargs_origin), v);
-    // auto i = f();
+    auto i = f();
 
-    // EXPECT_EQ(i, 10);
+    EXPECT_EQ(i, 10);
 }

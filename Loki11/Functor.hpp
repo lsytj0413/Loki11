@@ -189,8 +189,6 @@ auto BindFirst(const Fctor& fn, typename Fctor::Parm1 bound, Typelist<TArgs...>)
     using Outgoing = typename Private::BinderFirstTraits<Fctor>::BoundFunctorType;
     using BinderType = BinderFirst<Fctor, typename Fctor::Parm1, TArgs...>;
 
-    // static_assert(std::is_base_of<FunctorImpl<int, Typelist<>>, BinderType>::value, "");
-
     return Outgoing(std::shared_ptr<typename Outgoing::Impl>(
         new BinderType(fn, bound)));
 }
