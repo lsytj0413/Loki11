@@ -184,3 +184,17 @@ TEST_F(FunctorTest, testBindFirstOneArgs)
 
     EXPECT_EQ(i2, "xxx");
 }
+
+
+TEST_F(FunctorTest, testBindFirstMultiArgs)
+{
+    auto f = BindFirst(Functor<int, int, int, int>(test_multiargs_origin), 10);
+    auto i = f(20, 30);
+
+    EXPECT_EQ(i, 60);
+
+    auto f2 = BindFirst(Functor<string, string, string>(test_multiargs_origin_str), "xxx");
+    auto i2 = f2("zy");
+
+    EXPECT_EQ(i2, "xxxzy");
+}
