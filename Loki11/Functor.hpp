@@ -1,4 +1,4 @@
-// @file Functor.h
+// @file Functor.hpp
 // @brief 仿函数
 // @author
 // @version
