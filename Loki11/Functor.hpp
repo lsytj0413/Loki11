@@ -227,6 +227,12 @@ public:
 namespace Private
 {
 
+// @function
+// @brief 对第一个参数进行绑定
+// @param fn: Functor对象
+// @param bound: 第一个值
+// @param Typelist<TArgs...>, 剩余参数列表, 用于提取参数类型
+// @return BinderFirst类对象
 template <class Fctor, typename... TArgs>
 auto BindFirst(const Fctor& fn, typename Fctor::Parm1 bound, Typelist<TArgs...>)
 {
@@ -241,6 +247,11 @@ auto BindFirst(const Fctor& fn, typename Fctor::Parm1 bound, Typelist<TArgs...>)
 }
 
 
+// @function
+// @brief 对第一个参数进行绑定
+// @param fn: Functor对象
+// @param bound: 第一个值
+// @return BinderFirst类对象
 template <class Fctor>
 auto BindFirst(const Fctor& fn, typename Fctor::Parm1 bound)
 {
