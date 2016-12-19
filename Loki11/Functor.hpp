@@ -90,7 +90,7 @@ public:
 
     // @function operator()
     // @brief 实现父类的纯虚函数
-    ResultType operator()(TArgs&&... args) {
+    ResultType operator()(TArgs&&... args) override {
         return (((*m_obj).*m_mem_fn)(std::forward<TArgs>(args)...));
     }
 };
@@ -147,11 +147,15 @@ public:
             :m_impl(new MemFunctorHandler<Functor, PtrObj, MemFn, TArgs...>(p, memFn))
     {};
 
+    // @function operator()
+    // @brief 调用函数
     R operator() (TArgs&&... args) {
         return (*m_impl)(std::forward<TArgs>(args)...);
     };
 
-    // 支持类型转换, 已经提供另一个实例化可能性
+    // @function template.operator()
+    // @brief 模板调用函数
+    // @comment 成员函数模板, 支持变量的引用类型转换, 解决BinderFirst中的编译问题
     template <typename... UArgs>
     R operator()(UArgs&&... args) {
         return (*m_impl)(std::forward<TArgs>(args)...);
@@ -176,6 +180,10 @@ struct BinderFirstTraits<Functor<R, Head, TL...>>
 
 }
 
+
+// @class BinderFirst
+// @brief 绑定第一个参数类
+// @comment 模拟Functor
 // OriginalFunctor 为FunctorImpl, 即BoundFunctorType::Impl
 template <class OriginalFunctor, typename Head, typename... TArgs>
 class BinderFirst : public Private::BinderFirstTraits<OriginalFunctor>::Impl
@@ -186,7 +194,12 @@ public:
     using BoundType = typename OriginalFunctor::Parm1;
 
 private:
-    OriginalFunctor m_fn;    // Functor
+    // @variale
+    // @brief Functor, 即未绑定参数前的Functor对象
+    OriginalFunctor m_fn;
+
+    // @variale
+    // @brief 被绑定的第一个值
     BoundType m_v;
 
 public:
@@ -195,9 +208,17 @@ public:
             , m_v(b)
     {};
 
+    // @function operator()
+    // @brief 调用函数
     ResultType operator()(TArgs&&... args) {
-        // auto v{m_v};          // 不这样写不能通过编译, 因为Functor的operator已经实例化...
+
+        // @scheme 1
+        // auto v{m_v}; // 不这样写不能通过编译, 因为Functor的operator已经实例化, 不再支持引用转换
         // return m_fn(std::move(v), std::forward<TArgs>(args)...);
+
+        // @scheme 2
+        // @brief 可能转而调用template.operator()
+        // @comment 如果连续使用BinderFirst, 则可能出现编译错误
         return m_fn(m_v, std::forward<TArgs>(args)...);
     }
 };
