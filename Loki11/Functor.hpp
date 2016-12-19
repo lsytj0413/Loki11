@@ -3,6 +3,7 @@
 // @author
 // @version
 // @date
+// @c++11 使用std::function
 
 #pragma once
 
@@ -19,6 +20,7 @@ namespace Loki11
 
 // @class FunctorImpl
 // @brief Functor实现基类
+// @comment 因为Functor类会使用shared_ptr<FunctorImpl>存储不同的子类对象
 template <typename... R>
 class FunctorImpl;
 
@@ -28,6 +30,8 @@ class FunctorImpl<R, Typelist<TArgs...>>
 public:
     using ResultType = R;
 
+    // @function operator()
+    // @brief 调用函数, 子类必须实现此函数
     virtual R operator() (TArgs&&...) = 0;
     virtual ~FunctorImpl() {};
 };
