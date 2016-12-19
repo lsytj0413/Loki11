@@ -66,11 +66,17 @@ public:
 
 // @class MemFunctorHandler
 // @brief 成员函数实现类
+// @comment FunctorImpl的子类
 template <class ParentFunctor, typename PointorToObj, typename PointerToMemFn, typename... TArgs>
 class MemFunctorHandler : public ParentFunctor::Impl
 {
 private:
+    // @variale
+    // @brief 对象指针
     PointorToObj m_obj;
+
+    // @variale
+    // @brief 对象函数指针
     PointerToMemFn m_mem_fn;
 
 public:
@@ -82,6 +88,8 @@ public:
             , m_mem_fn(mem_fn)
     {};
 
+    // @function operator()
+    // @brief 实现父类的纯虚函数
     ResultType operator()(TArgs&&... args) {
         return (((*m_obj).*m_mem_fn)(std::forward<TArgs>(args)...));
     }
@@ -89,7 +97,7 @@ public:
 
 
 // @class Functor
-// @brief 仿函数实现
+// @brief 仿函数对象实现
 template <typename R, typename... TArgs>
 class Functor
 {
@@ -100,24 +108,31 @@ public:
     using ArgsList = Typelist<TArgs...>;
 
 private:
+    // @variale
+    // @brief 保存的FunctorImpl 对象指针
     std::shared_ptr<Impl> m_impl;
 
 public:
     Functor()
             : m_impl(nullptr)
     {};
+
     Functor(const Functor& rhs)
             : m_impl(rhs.m_impl)
     {} ;
+
     Functor(Functor&& rhs)
             : m_impl(std::move(rhs.m_impl))
     {};
+
     Functor& operator=(const Functor& rhs) {
         m_impl = rhs.m_impl;
     };
+
     Functor& operator=(Functor&& rhs){
         m_impl = std::move(rhs.m_impl);
     };
+
     explicit Functor(const std::shared_ptr<Impl>& spImpl)
             : m_impl(spImpl)
     {};
