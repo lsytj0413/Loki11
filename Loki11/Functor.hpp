@@ -39,10 +39,13 @@ public:
 
 // @class FunctorHandler
 // @brief 普通函数和函数对象实现类
+// @comment FunctorImpl的子类
 template <class ParentFunctor, typename Fun, typename... TArgs>
 class FunctorHandler : public ParentFunctor::Impl
 {
 private:
+    // @variale
+    // @brief 包装的函数, 可以是函数指针, 仿函数对象以及 Functor
     Fun m_fn;
 
 public:
@@ -53,7 +56,9 @@ public:
             : m_fn(fun)
     {};
 
-    ResultType operator()(TArgs&&... args){
+    // @function operator()
+    // @brief 实现父类的纯虚函数
+    ResultType operator()(TArgs&&... args) override {
         return m_fn(std::forward<TArgs>(args)...);
     };
 };
