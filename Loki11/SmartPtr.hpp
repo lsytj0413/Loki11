@@ -9,6 +9,7 @@
 
 #include <utility>
 #include <cassert>
+#include <mutex>
 
 
 namespace Loki11
@@ -84,7 +85,7 @@ private:
 
 public:
     RefCounted() {
-        m_count = new int(1);
+        m_count = new unsigned int(1);
         assert(m_count);
     };
 
@@ -117,5 +118,57 @@ public:
     };
 };
 
+
+struct RefCountedMTAdj
+{
+    template <class P>
+    class RefCountedMT
+    {
+    private:
+        unsigned int* m_count;
+        std::mutex m_mutex;
+
+    public:
+        RefCountedMT() {
+            m_count = new unsigned int(1);
+            assert(m_count);
+        };
+
+        RefCountedMT(const RefCountedMT& rhs)
+                : m_count(rhs.m_count)
+        {};
+
+        template <typename P1>
+        RefCountedMT(const RefCountedMT<P1>& rhs)
+                : m_count(reinterpret_cast<const RefCountedMT<P>&>(rhs).m_count)
+        {};
+
+        P Clone(const P& val) {
+            {
+                std::lock_guard<std::mutex> lock(m_mutex);
+                ++(*m_count);
+            }
+            return val;
+        };
+
+        bool Release(const P&) {
+            {
+                std::lock_guard<std::mutex> lock(m_mutex);
+                --(*m_count);
+                if (!(*m_count)) {
+                    delete m_count;
+                    m_count = nullptr;
+                    return true;
+                }
+            }
+
+            return false;
+        };
+
+        void Swap(RefCountedMT& rhs) {
+            std::swap(m_count, rhs.m_count);
+        };
+    };
+};
 
 }
