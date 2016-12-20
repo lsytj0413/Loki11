@@ -171,4 +171,11 @@ struct RefCountedMTAdj
     };
 };
 
+
+template <typename T>
+class SmartPtr
+{
+};
+
+
 }
