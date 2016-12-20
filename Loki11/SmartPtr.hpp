@@ -75,4 +75,47 @@ protected:
     };
 };
 
+
+template <class P>
+class RefCounted
+{
+private:
+    unsigned int* m_count;
+
+public:
+    RefCounted() {
+        m_count = new int(1);
+        assert(m_count);
+    };
+
+    RefCounted(const RefCounted& rhs)
+            : m_count(rhs.m_count)
+    {};
+
+    template <typename P1>
+    RefCounted(const RefCounted<P1>& rhs)
+            : m_count(reinterpret_cast<const RefCounted&>(rhs).m_count)
+    {};
+
+    P Clone(const P& val) {
+        ++(*m_count);
+        return val;
+    };
+
+    bool Release(const P&) {
+        if (!(--(*m_count))) {
+            delete m_count;
+            m_count = nullptr;
+            return true;
+        }
+
+        return false;
+    };
+
+    void Swap(RefCounted& rhs) {
+        std::swap(m_count, rhs.m_count);
+    };
+};
+
+
 }
