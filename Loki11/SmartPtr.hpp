@@ -172,6 +172,29 @@ struct RefCountedMTAdj
 };
 
 
+template <class P>
+struct DeepCopy
+{
+    DeepCopy() {};
+
+    template <class P1>
+    DeepCopy(const DeepCopy<P1>&)
+    {};
+
+    static P Clone(const P& val) {
+        return val->Clone();
+    };
+
+    static bool Release(const P& val) {
+        return true;
+    };
+
+    static void Swap(DeepCopy&) {};
+
+    const static bool destructiveCopy = false;
+};
+
+
 template <typename T>
 class SmartPtr
 {
