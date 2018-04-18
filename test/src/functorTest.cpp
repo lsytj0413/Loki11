@@ -20,6 +20,7 @@ TEST_F(FunctorTest, testOriginFunctionNonArgs)
     auto i = f();
 
     EXPECT_EQ(1, i);
+
 }
 
 
